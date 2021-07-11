@@ -1,0 +1,3 @@
+"CustomHeroList"{
+	"npc_dota_hero_pudge"	"1"
+}
