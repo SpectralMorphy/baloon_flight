@@ -1,3 +1,4 @@
-"CustomHeroList"{
-	"npc_dota_hero_pudge"	"1"
+"CustomHeroList"
+{
+	"npc_dota_hero_wisp"	"1"
 }
