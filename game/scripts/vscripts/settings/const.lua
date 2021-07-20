@@ -16,8 +16,8 @@ CONST = {
 
     MAX_VEL_FALL = 900,
     MAX_VEL_RISE = 700,
-    ACC_FALL = 500,
-    ACC_RISE = 400,
+    ACC_FALL = 400,
+    ACC_RISE = 300,
 
     ANIM_IDLE = ACT_DOTA_FLAIL,
     ANIM_MOVE = ACT_DOTA_RUN,

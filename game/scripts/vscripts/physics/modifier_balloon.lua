@@ -78,16 +78,16 @@ function modifier_balloon:UpdateHorizontalMotion( hUnit, nTimeDelta )
 
     vPos.x = vPos.x + hBal.vVel.x * nTimeDelta
 
-    -----------------------------------
-    -- hardcoded edges
-    if vPos.x < -1500 then
-        vPos.x = -3000 - vPos.x
-        hBal.vVel.x = -hBal.vVel.x
-    end
-    if vPos.x > 1500 then
-        vPos.x = 3000 - vPos.x
-        hBal.vVel.x = -hBal.vVel.x
-    end
+	-----------------------------------
+	-- hardcoded edges
+	if vPos.x < -4500 then
+	    vPos.x = -9000 - vPos.x
+	    hBal.vVel.x = -hBal.vVel.x
+	end
+	if vPos.x > 600 then
+	    vPos.x = 1200 - vPos.x
+	    hBal.vVel.x = -hBal.vVel.x
+	end
     -----------------------------------
 
     hUnit:SetAbsOrigin( vPos )
@@ -126,7 +126,7 @@ function modifier_balloon:UpdateVerticalMotion( hUnit, nTimeDelta )
 
     -----------------------------------
     -- hardcoded top
-    if vPos.z > 1600 then
+    if vPos.z > 2500 then
         if not self.bTop then
             self.bTop = true
             hBal:BlockControlZ( true )
