@@ -6,6 +6,9 @@ table.key( table, value: ? ) => key: ?
 -- Number of fields in table
 table.size( table ) => size: number
 
+-- Check if table is empty
+table.empty( table ) => boolean
+
 -- Unpack itable to params sequence.
 table.unpack( { params: ? ... } ) => params: ? ...
 
@@ -67,6 +70,10 @@ function table.size( t )
 	end
 	
 	return nSize
+end
+
+function table.empty( t )
+	return next( t ) == nil
 end
 
 function table.unpack( qArgs )

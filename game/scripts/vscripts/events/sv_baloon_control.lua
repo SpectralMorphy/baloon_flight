@@ -1,8 +1,7 @@
 -----------------------------------------------------------
 -- Prcess balloon controls
 
-BalloonFlight:ListenToClientEvent( 'sv_baloon_control', function( t )
-
+return function( t )
     -----------------------------------------------------------
     -- Find appropriate balloon interface
 
@@ -28,4 +27,4 @@ BalloonFlight:ListenToClientEvent( 'sv_baloon_control', function( t )
     if t.axis == 'z' then
         hUnit.Balloon:MoveUp( toboolean( t.active ) )
     end
-end )
+end

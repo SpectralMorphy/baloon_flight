@@ -1,8 +1,12 @@
 ----------------------------------------------------------------
 -- List of events to register
 
-local tEvents = {
+local tGameEvents = {
     npc_spawned = true,
+}
+
+local tClientEvents = {
+	sv_baloon_control = true,
 }
 
 ----------------------------------------------------------------
@@ -35,8 +39,43 @@ function BalloonFlight:ListenToClientEvent( sEvent, fCallback )
     end
 
     if fCallback then
-        local nListener = CustomGameEventManager:RegisterListener( sEvent, function( _, t )
-            fCallback( t )
+        local nListener = CustomGameEventManager:RegisterListener( sEvent, function( nPlayerIndex, t )
+			if PlayerResource:IsValidPlayer( t.PlayerID ) then
+				fCallback( t )
+			else
+				local hPlayer = EntIndexToHScript( nPlayerIndex )
+
+				local nLimit = 100
+				local bSucc = false
+
+				Timer( function()
+					if not exist( hPlayer ) then
+						return
+					end
+
+					local nPlayer = hPlayer:GetPlayerID()
+					if not PlayerResource:IsValidPlayer( nPlayer ) then
+						if nLimit > 0 then
+							nLimit = nLimit - 1
+							return 1/30
+						else
+							print("Player initialization timeout")
+							return
+						end
+					end
+
+					bSucc = true
+					t.PlayerID = nPlayer
+					fCallback( t )
+
+				end ).OnDestroy = function( self )
+					if not bSucc then
+						print("Received event from ivalid client")
+					end
+				end
+
+				return
+			end
         end )
 
         self.tClientEvents[ sEvent ] = nListener
@@ -46,7 +85,7 @@ end
 ----------------------------------------------------------------
 -- Registering events
 
-for sEvent, bActive in pairs( tEvents ) do
+for sEvent, bActive in pairs( tGameEvents ) do
     if bActive then
         BalloonFlight:ListenToGameEvent( sEvent, require( 'events/' .. sEvent ) )
     else
@@ -54,4 +93,10 @@ for sEvent, bActive in pairs( tEvents ) do
     end
 end
 
-require 'events/controls'
+for sEvent, bActive in pairs( tClientEvents ) do
+    if bActive then
+        BalloonFlight:ListenToClientEvent( sEvent, require( 'events/' .. sEvent ) )
+    else
+        BalloonFlight:ListenToClientEvent( sEvent, false )
+    end
+end

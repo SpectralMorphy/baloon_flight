@@ -1,5 +1,6 @@
 ----------------------------------------------------------------
 -- event: npc_spawned
+
 return function( t )
     local hUnit = EntIndexToHScript( t.entindex )
     if not hUnit then
