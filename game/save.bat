@@ -1,5 +1,7 @@
 @echo off&setlocal
-set git_folder=C:\Steam\steamapps\common\dota 2 beta\game\dota_addons\baloon_flight
+
+set git_folder=C:\Users\Alexe\Documents\GitHub\baloon_flight
+
 rd "%git_folder%\game" /s /q
 rd "%git_folder%\content" /s /q
 xcopy "%~dp0" "%git_folder%\game" /y /e /i

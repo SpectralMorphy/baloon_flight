@@ -1,6 +1,6 @@
 @echo off&setlocal
 
-set git_folder=C:\Users\Alexe\Documents\GitHub\baloon_flight
+set dota_folder=C:\Users\Alexe\Documents\GitHub\baloon_flight
 
 rd "%git_folder%\game" /s /q
 rd "%git_folder%\content" /s /q
