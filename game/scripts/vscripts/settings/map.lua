@@ -5,4 +5,4 @@ MAPS = {
 	},
 }
 
-MAP = table.overlay( MAPS.DEFAULT, MAPS[ GetMapName() ] or {} )
+MAP = table.overlay( MAPS.DEFAULT, MAPS[ GetMapName() ] )
