@@ -27,7 +27,8 @@ function BalloonController:constructor( hUnit )
 	
 	local vPos = self.hUnit:GetOrigin()
 	vPos.y = self.CONST.FIXED_Y
-	self.hUnit:SetAbsOrigin( vPos )
+    self.vOldPos = vPos
+	self:SetPos( vPos )
 
     self:StopMove()
 end
@@ -59,6 +60,29 @@ function BalloonController:ApplySettings( t )
 end
 
 ------------------------------------------------------------
+-- Get current position
+
+function BalloonController:GetPos()
+	if not exist( self ) or not exist( self.hUnit ) then
+        return
+    end
+
+    return self.vPos
+end
+
+------------------------------------------------------------
+-- Set current position
+
+function BalloonController:SetPos( vPos )
+	if not exist( self ) or not exist( self.hUnit ) then
+        return
+    end
+
+    self.vPos = vPos * 1
+    self.hUnit:SetAbsOrigin( vPos )
+end
+
+------------------------------------------------------------
 -- Update horizontal postion
 
 function BalloonController:UpdateHorizontal( nTimeDelta )
@@ -66,7 +90,7 @@ function BalloonController:UpdateHorizontal( nTimeDelta )
         return
     end
 
-    local vPos = self.hUnit:GetOrigin()
+    local vPos = self:GetPos()
 
     self:UpdateAccX()
 
@@ -102,7 +126,7 @@ function BalloonController:UpdateHorizontal( nTimeDelta )
 	
 	vPos.y = self.CONST.FIXED_Y
 
-    self.hUnit:SetAbsOrigin( vPos )
+    self:SetPos( vPos )
 end
 
 ------------------------------------------------------------
@@ -113,7 +137,7 @@ function BalloonController:UpdateVertical( nTimeDelta )
         return
     end
 
-    local vPos = self.hUnit:GetOrigin()
+    local vPos = self:GetPos()
 
     self:UpdateAccZ()
 
@@ -152,7 +176,50 @@ function BalloonController:UpdateVertical( nTimeDelta )
     end
     -----------------------------------
 
-    self.hUnit:SetAbsOrigin( vPos )
+    self:SetPos( vPos )
+
+    self:UpdateCollision()
+end
+
+------------------------------------------------------------
+-- Process collisions between 2 consecutive position
+
+function BalloonController:UpdateCollision()
+    local vPos = self:GetPos()
+
+    local tCollisions = Obstacles:FindCollisions( self.vOldPos, vPos )
+    if tCollisions then
+
+        --------------------------------------------------------
+        -- Solid collision
+
+        local t = tCollisions[ Obstacle.TYPE.SOLID ]
+        if t then
+            if t.nCollision == Obstacle.COLLISION.TOP then
+                self.vVel.z = math.max( 0, self.vVel.z )
+                vPos.z = t.vPos.z
+            end
+
+            if t.nCollision == Obstacle.COLLISION.BOT then
+                self.vVel.z = math.min( 0, self.vVel.z )
+                vPos.z = t.vPos.z
+            end
+
+            if t.nCollision == Obstacle.COLLISION.RIGHT then
+                self.vVel.x = math.max( 0, self.vVel.x )
+                vPos.x = t.vPos.x
+            end
+
+            if t.nCollision == Obstacle.COLLISION.LEFT then
+                self.vVel.x = math.min( 0, self.vVel.x )
+                vPos.x = t.vPos.x
+            end
+
+            self:SetPos( vPos )
+        end
+    end
+
+    self.vOldPos = vPos * 1
 end
 
 ------------------------------------------------------------
