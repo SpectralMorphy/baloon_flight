@@ -27,7 +27,6 @@ function BalloonController:constructor( hUnit )
 	
 	local vPos = self.hUnit:GetOrigin()
 	vPos.y = self.CONST.FIXED_Y
-    print('ebanat??')
     self.vOldPos = vPos
 	self:SetPos( vPos )
 
@@ -111,10 +110,7 @@ function BalloonController:UpdateHorizontal( nTimeDelta )
         end
     end
 
-    print('start update')
-    print(vPos)
     vPos.x = vPos.x + self.vVel.x * nTimeDelta
-    print(vPos)
 
 	-----------------------------------
 	-- hardcoded edges
@@ -191,9 +187,6 @@ end
 function BalloonController:UpdateCollision()
     local vPos = self:GetPos()
 
-    print('check btw')
-    print( self.vOldPos )
-    print( vPos )
     local tCollisions = Obstacles:FindCollisions( self.vOldPos, vPos )
     if tCollisions then
 
@@ -222,19 +215,12 @@ function BalloonController:UpdateCollision()
                 vPos.x = t.vPos.x
             end
 
-            print('set collision pos',vPos)
             self:SetPos( vPos )
         end
     end
 
-    print('set old',vPos)
     self.vOldPos = vPos * 1
 end
-
-------------------------------------------------------------
--- Colission with platform
-
--- function BalloonController:
 
 ------------------------------------------------------------
 -- X axis movement controls

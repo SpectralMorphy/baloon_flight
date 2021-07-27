@@ -1,6 +1,13 @@
 modifier_balloon = class{}
 
 ------------------------------------------------------------
+-- States
+
+function modifier_balloon:CheckState()
+    return {
+        [MODIFIER_STATE_NO_HEALTH_BAR] = true,
+    }
+end
 
 function modifier_balloon:DeclareFunctions()
     return {
