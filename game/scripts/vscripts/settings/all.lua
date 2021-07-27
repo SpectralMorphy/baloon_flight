@@ -5,6 +5,7 @@ local tFiles = {
 	'functions',
 	'map',
 	'physics',
+	'material',
 	'camera',
 }
 

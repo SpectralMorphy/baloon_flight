@@ -1,0 +1,8 @@
+MATERIAL = {
+	DEFAULT = {
+		TYPE = Obstacle.TYPE.SOLID,
+		SIDE_BOUNCE = 1,
+		BOT_BOUNCE = 0,
+		BOT_STUN = 1,
+	}
+}
