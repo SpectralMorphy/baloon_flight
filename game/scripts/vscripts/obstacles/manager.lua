@@ -23,7 +23,7 @@ end
 
 function Obstacles:CreateFromTrigger( hTrigger, tMaterial )
 	local tBounds = hTrigger:GetBounds()
-	local vCenter = hTrigger:GetCenter()
+	local vCenter = hTrigger:GetOrigin()
 	local vMax = tBounds.Maxs + vCenter
 	local vMin = tBounds.Mins + vCenter
 	local tEdges = {
@@ -32,11 +32,12 @@ function Obstacles:CreateFromTrigger( hTrigger, tMaterial )
 		r = vMax.x,
 		t = vMax.z,
 	}
+	table.print( tEdges )
 
 	Obstacle( tEdges, tMaterial )
 end
 
-function Obstacles:FindCollisions( v1, v2 )
+function Obstacles:FindCollisions( v1, v2, nRadius )
 	local tCollisions = {}
 	local bHas = false
 
@@ -45,18 +46,23 @@ function Obstacles:FindCollisions( v1, v2 )
 	end
 
 	for _, hObstacle in ipairs( self.qList ) do
-		local nCollision, vPos = hObstacle:FindCollision( v1, v2 )
+		local nCollision, vPos = hObstacle:FindCollision( v1, v2, nRadius )
 		if nCollision then
+			bHas = true
 			local nType = hObstacle:GetType()
-			local tConcurent = tCollisions[ nType ]
-			if not tConcurent or fDistance( tConcurent.vPos ) > fDistance( vPos ) then
-				bHas = true
-				tCollisions[ nType ] = {
-					tMaterial = hObstacle:GetMaterial(),
-					nCollision = nCollision,
-					vPos = vPos,
-				}
+			local qCollisions = goc( tCollisions, nType )
+			local nDistance = fDistance( vPos )
+
+			local i = 1
+			while qCollisions[i] and fDistance( qCollisions[i].vPos ) < nDistance do
+				i = i + 1
 			end
+
+			table.insert( qCollisions, i, {
+				hObstacle = hObstacle,
+				nCollision = nCollision,
+				vPos = vPos,
+			})
 		end
 	end
 

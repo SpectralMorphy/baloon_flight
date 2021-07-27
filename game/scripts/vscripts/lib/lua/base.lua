@@ -200,6 +200,10 @@ function mid( nMin, nVal, nMax )
 	return math.min( nMax, math.max( nMin, nVal ) )
 end
 
+function isnan( n )
+	return tostring( n ) == 'nan'
+end
+
 function args( tArgs, qConditions )
 	local tNewArgs = {}
 	local tChecked = {}

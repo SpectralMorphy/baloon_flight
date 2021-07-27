@@ -2,6 +2,7 @@ Obstacle = Obstacle or class{}
 
 Obstacle.TYPE = {
 	SOLID = 1,
+	SPACE = 2,
 }
 
 Obstacle.COLLISION = {
@@ -35,7 +36,7 @@ end
 ------------------------------------------------------------------
 -- Check collision between 2 points
 
-function Obstacle:FindCollision( v1, v2 )
+function Obstacle:FindCollision( v1, v2, nRadius )
 	local function fIntersect( x1, y1, x2, y2, x, yMin, yMax )
 		if x < x1 or x2 <= x1 then
 			return false
@@ -44,7 +45,7 @@ function Obstacle:FindCollision( v1, v2 )
 		local nPct = ( x - x1 ) / ( x2 - x1 )
 		if nPct >= 0 and nPct <= 1 then
 			local y = y1 + ( y2 - y1 ) * nPct
-			if y > yMin and y < yMax then
+			if y + nRadius > yMin and y - nRadius < yMax then
 				return x, y
 			end
 		end
@@ -52,23 +53,31 @@ function Obstacle:FindCollision( v1, v2 )
 		return false
 	end
 
-	local x, z = fIntersect( v1.x, v1.z, v2.x, v2.z, self.tEdges.l, self.tEdges.b, self.tEdges.t )
+	local x, z = fIntersect( v1.x, v1.z, v2.x, v2.z, self.tEdges.l - nRadius, self.tEdges.b, self.tEdges.t )
 	if x then
 		return Obstacle.COLLISION.LEFT, Vector( x, 0, z )
 	end
 
-	local x, z = fIntersect( v2.x, v2.z, v1.x, v1.z, self.tEdges.r, self.tEdges.b, self.tEdges.t )
+	local x, z = fIntersect( v2.x, v2.z, v1.x, v1.z, self.tEdges.r + nRadius, self.tEdges.b, self.tEdges.t )
 	if x then
 		return Obstacle.COLLISION.RIGHT, Vector( x, 0, z )
 	end
 
-	local z, x = fIntersect( v2.z, v2.x, v1.z, v1.x, self.tEdges.t, self.tEdges.l, self.tEdges.r )
+	local z, x = fIntersect( v2.z, v2.x, v1.z, v1.x, self.tEdges.t + nRadius, self.tEdges.l, self.tEdges.r )
 	if x then
 		return Obstacle.COLLISION.TOP, Vector( x, 0, z )
 	end
 
-	local z, x = fIntersect( v1.z, v1.x, v2.z, v2.x, self.tEdges.b, self.tEdges.l, self.tEdges.r )
+	local z, x = fIntersect( v1.z, v1.x, v2.z, v2.x, self.tEdges.b - nRadius, self.tEdges.l, self.tEdges.r )
 	if x then
 		return Obstacle.COLLISION.BOT, Vector( x, 0, z )
 	end
+end
+
+------------------------------------------------------------------
+-- Is player colliding with this obstacle
+
+function Obstacle:IsColliding( vPos, nRadius )
+	return vPos.x + nRadius >= self.tEdges.l and vPos.x - nRadius <= self.tEdges.r
+		and vPos.y + nRadius >= self.tEdges.b and vPos.y - nRadius <= self.tEdges.t
 end

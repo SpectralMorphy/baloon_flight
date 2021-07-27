@@ -12,6 +12,7 @@ function BalloonController:constructor( hUnit )
     self.vVel = Vector( 0, 0, 0 )
     self.vAcc = Vector( 0, 0, 0 )
     self.nBlockZ = 0
+    self.tSpaces = {}
 
 	self:ApplySettings({})
 
@@ -111,21 +112,7 @@ function BalloonController:UpdateHorizontal( nTimeDelta )
     end
 
     vPos.x = vPos.x + self.vVel.x * nTimeDelta
-
-	-----------------------------------
-	-- hardcoded edges
-	if vPos.x < -4500 then
-	    vPos.x = -9000 - vPos.x
-	    self.vVel.x = -self.vVel.x
-	end
-	if vPos.x > 600 then
-	    vPos.x = 1200 - vPos.x
-	    self.vVel.x = -self.vVel.x
-	end
-    -----------------------------------
-	
 	vPos.y = self.CONST.FIXED_Y
-
     self:SetPos( vPos )
 end
 
@@ -150,14 +137,6 @@ function BalloonController:UpdateVertical( nTimeDelta )
     end
 
     vPos.z = vPos.z + self.vVel.z * nTimeDelta
-
-    -----------------------------------
-    -- hardcoded bottom
-    if vPos.z <= 128 then
-        vPos.z = 128
-        self.vVel.z = 0
-    end
-    -----------------------------------
 
     -----------------------------------
     -- hardcoded top
@@ -186,40 +165,131 @@ end
 
 function BalloonController:UpdateCollision()
     local vPos = self:GetPos()
+    local tCollisions = Obstacles:FindCollisions( self:GetCenter( self.vOldPos ), self:GetCenter( vPos ), self.CONST.HITBOX_RADIUS )
 
-    local tCollisions = Obstacles:FindCollisions( self.vOldPos, vPos )
     if tCollisions then
-
         --------------------------------------------------------
         -- Solid collision
 
-        local t = tCollisions[ Obstacle.TYPE.SOLID ]
-        if t then
+        local q = tCollisions[ Obstacle.TYPE.SOLID ]
+        if q then
+            local t = q[1]
+            local vColPos = self:CenterToPos( t.vPos )
+            local tMat = t.hObstacle:GetMaterial()
+
             if t.nCollision == Obstacle.COLLISION.TOP then
                 self.vVel.z = math.max( 0, self.vVel.z )
-                vPos.z = t.vPos.z
+                vPos.z = vColPos.z
             end
-
+            
             if t.nCollision == Obstacle.COLLISION.BOT then
-                self.vVel.z = math.min( 0, self.vVel.z )
-                vPos.z = t.vPos.z
+                self.vVel.z = math.min( 0, self.vVel.z, -self.vVel.z * tMat.BOT_BOUNCE )
+                vPos.z = vColPos.z - math.max( 0, vPos.z - vColPos.z ) * tMat.BOT_BOUNCE
             end
 
             if t.nCollision == Obstacle.COLLISION.RIGHT then
-                self.vVel.x = math.max( 0, self.vVel.x )
-                vPos.x = t.vPos.x
+                self.vVel.x = math.max( 0, self.vVel.x, -self.vVel.x * tMat.SIDE_BOUNCE )
+                vPos.x = vColPos.x + math.max( 0, vColPos.x - vPos.x ) * tMat.SIDE_BOUNCE
             end
 
             if t.nCollision == Obstacle.COLLISION.LEFT then
-                self.vVel.x = math.min( 0, self.vVel.x )
-                vPos.x = t.vPos.x
+                self.vVel.x = math.min( 0, self.vVel.x, -self.vVel.x * tMat.SIDE_BOUNCE )
+                vPos.x = vColPos.x - math.max( 0, vPos.x - vColPos.x ) * tMat.SIDE_BOUNCE
             end
 
             self:SetPos( vPos )
         end
+
+        --------------------------------------------------------
+        -- Space collision
+
+        q = tCollisions[ Obstacle.TYPE.SPACE ]
+        if q then
+            for _, t in pairs( q ) do
+                if not self.tSpaces[ t.hObstacle ] then
+                    self.tSpaces[ t.hObstacle ] = true
+                    self:BlockControlZ( true )
+                end
+            end
+        end
+
+        for hObstacle in pairs( self.tSpaces ) do
+            if not hObstacle:IsColliding( vPos, self.CONST.HITBOX_RADIUS ) then
+                self.tSpaces[ hObstacle ] = nil
+                Timer( hObstacle.MATERIAL.DISABLE_TIME, function()
+                    self:BlockControlZ( false )
+                end )
+            end
+        end
+    end
+
+    ------------------------------------------------------
+    -- Players collision
+
+    local qHeroes = FindAllHeroes()
+    for _, hHero in pairs( qHeroes ) do
+        local other = hHero.Balloon
+        if hHero ~= self.hUnit and exist( other ) then
+            local vPos1 = self:GetCenter( vPos )
+            local vPos2 = other:GetCenter()
+            local nColDistance = self.CONST.HITBOX_RADIUS + other.CONST.HITBOX_RADIUS
+            local vDelta = vPos1 - vPos2; vDelta.y = 0
+            local nDistance = #vDelta
+
+            if nDistance <= nColDistance then
+
+                -------------------------------------------------
+                -- Collision physics 1
+
+                local m1 = self.CONST.MASS
+                local m2 = other.CONST.MASS
+                local m = m1 + m2
+
+                local vVel = -self.vVel
+                local nVel = #vVel
+                local vNewDelta
+                if nVel <= 1 then
+                    vNewDelta = vDelta:Normalized() * nColDistance
+                else
+                    local cos = vVel.x / nVel
+                    local sin = vVel.z / nVel
+                    local b = 2 * ( vDelta.x * cos + vDelta.z * sin )
+                    local c = nDistance^2 - nColDistance^2
+                    local k = ( -b + math.sqrt( b^2 - 4*c ) ) / 2
+                    vNewDelta = vDelta + k * Vector( cos, 0, sin )
+                end
+                vNewDelta = ( #vNewDelta + 1 ) * vNewDelta:Normalized() 
+                vPos1 = vPos2 + vNewDelta
+
+                for _, sAx in pairs{'x','z'} do
+                    local s1 = self.vVel[ sAx ]
+                    local s2 = other.vVel[ sAx ]
+                    self.vVel[ sAx ] = ( 2 * m2 * s2 + s1 * ( m1 - m2 ) ) / m
+                    other.vVel[ sAx ] = ( 2 * m1 * s1 + s2 * ( m2 - m1 ) ) / m
+                end
+
+                vPos = self:CenterToPos( vPos1 )
+                self:SetPos( vPos )
+            end
+        end
     end
 
     self.vOldPos = vPos * 1
+end
+
+------------------------------------------------------------
+-- Convert between hitbox center and unit position
+
+function BalloonController:GetCenter( vPos )
+    return ( vPos or self:GetPos() ) + Vector( 0, 0, self.CONST.HITBOX_RADIUS )
+end
+
+function BalloonController:SetByCenter( vPos )
+    self:SetPos( self:CenterToPos( vPos ) )
+end
+
+function BalloonController:CenterToPos( vPos )
+    return vPos - Vector( 0, 0, self.CONST.HITBOX_RADIUS )
 end
 
 ------------------------------------------------------------

@@ -12,6 +12,7 @@ return function( t )
 
     Timer( 1/30, function()
         if IsPlayerMainHero( hUnit ) then
+            hUnit:SetAbsOrigin( hUnit:GetOrigin() + Vector( 0, 0, 100 ) )
             BalloonController( hUnit )
         end
     end )
