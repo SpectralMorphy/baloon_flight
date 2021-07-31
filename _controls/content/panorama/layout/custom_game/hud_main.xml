@@ -1,9 +1,0 @@
-<root>
-	<scripts>
-		<include src="file://{resources}/scripts/custom_game/controls.js"/>
-		<include src="file://{resources}/scripts/custom_game/camera.js"/>
-	</scripts>
-
-	<Panel>
-	</Panel>
-</root>
