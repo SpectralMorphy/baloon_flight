@@ -12,7 +12,7 @@ GameUI.SetDefaultUIEnabled( DotaDefaultUIElement_t.DOTA_DEFAULT_UI_INVENTORY_SHO
 // ==========================================
 // Improved AddCommand interface 
 
-_G.tCommands = {};
+_G.tCommands = _G.tCommands || {};
 
 _G.SetCommand = function( sCommand, fCallback ){
     if( !_G.tCommands[ sCommand ] ){

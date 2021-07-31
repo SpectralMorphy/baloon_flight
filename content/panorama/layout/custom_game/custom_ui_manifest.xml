@@ -1,5 +1,6 @@
 <root>
 	<scripts>
+		<include src="file://{resources}/scripts/custom_game/jsdata.js"/>
 		<include src="file://{resources}/scripts/custom_game/main.js"/>
 	</scripts>
 

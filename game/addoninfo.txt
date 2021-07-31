@@ -1,4 +1,5 @@
-"AddonInfo"{
+"AddonInfo"
+{
 	"PenaltiesEnabled"	"0"
 	"CheckAFKPlayers"	"0"
 	"EnablePickRules"	"0"
@@ -8,9 +9,14 @@
 	"EventGame"			"0"
 	"DisableIK"			"0"
 	
-	"maps"		"demo"
+	"maps"		"demo poligon"
 
-	"demo"{
+	"demo"
+	{
+		"MaxPlayers"	"5"
+	}
+	"poligon"
+	{
 		"MaxPlayers"	"5"
 	}
 }

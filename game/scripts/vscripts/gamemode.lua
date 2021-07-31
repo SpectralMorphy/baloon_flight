@@ -44,15 +44,20 @@ end
 function BalloonFlight:Load()
 	require 'lib/timer'
 	require 'util'
+	require 'settings/all'
+	require 'events/init'
+	require 'lib/jsdata'
 	require 'physics/init'
-	require 'settings/const'
+	require 'camera'
 
 	local GameModeEntity = GameRules:GetGameModeEntity()
 
 	GameRules:SetCustomGameSetupAutoLaunchDelay( 0 )
+	GameModeEntity:SetDaynightCycleDisabled( true )
 	GameModeEntity:SetFogOfWarDisabled( true )
+	GameModeEntity:SetCameraZRange( 0, MAP.RENDER_DISTANCE )
 
-	require 'events/init'
+	CustomGameEventManager:Send_ServerToAllClients( 'cl_activate', {} )
 end
 
 ------------------------------------------------------------

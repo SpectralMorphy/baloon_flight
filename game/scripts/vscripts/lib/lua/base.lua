@@ -28,7 +28,11 @@ envrunfile(
 	error: function( err: string ) (error)
 ) => result: ? ...
 
+-- Get the average of 3 numbers
 mid( min: number, x: number, max: number ) => number
+
+-- Get or create table field
+goc( target: table, key: ?, default: ? = {} ) => default: ? 
 
 ]]
 
@@ -231,6 +235,18 @@ function args( tArgs, qConditions )
 	end
 
 	return tNewArgs
+end
+
+function goc( t, k, v )
+	if v == nil then
+		v = {}
+	end
+
+	if t[ k ] == nil then
+		t[ k ] = v
+	end
+	
+	return t[ k ]
 end
 
 require 'lib/lua/table'

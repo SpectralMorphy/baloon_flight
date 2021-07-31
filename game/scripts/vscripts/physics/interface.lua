@@ -12,9 +12,10 @@ function BalloonController:constructor( hUnit )
     self.vVel = Vector( 0, 0, 0 )
     self.vAcc = Vector( 0, 0, 0 )
     self.nBlockZ = 0
-    self.CONST = table.deepcopy( CONST )
-    self.hUnit = hUnit
 
+	self:ApplySettings({})
+
+    self.hUnit = hUnit
     hUnit.Balloon = self
 
     self.hMod = hUnit:AddNewModifier( hUnit, nil, 'modifier_balloon', {} )
@@ -23,6 +24,10 @@ function BalloonController:constructor( hUnit )
         self:Destroy()
         error( 'BalloonController: Failed to apply balloon modifier to unit ' .. hUnit:GetUnitName() )
     end
+	
+	local vPos = self.hUnit:GetOrigin()
+	vPos.y = self.CONST.FIXED_Y
+	self.hUnit:SetAbsOrigin( vPos )
 
     self:StopMove()
 end
@@ -44,6 +49,110 @@ function BalloonController:Destroy()
     if exist( self.hUnit ) then
         self.hUnit.Balloon = nil
     end
+end
+
+------------------------------------------------------------
+-- Apply physics settings
+
+function BalloonController:ApplySettings( t )
+	self.CONST = table.overlay( PHYSICS.DEFAULT, t )
+end
+
+------------------------------------------------------------
+-- Update horizontal postion
+
+function BalloonController:UpdateHorizontal( nTimeDelta )
+	if not exist( self ) or not exist( self.hUnit ) then
+        return
+    end
+
+    local vPos = self.hUnit:GetOrigin()
+
+    self:UpdateAccX()
+
+    local nOldVelX = self.vVel.x
+    self.vVel.x = self.vVel.x + self.vAcc.x * nTimeDelta
+
+    if self.nDirX == 0 then
+        if ( nOldVelX < 0 and self.vVel.x > 0 )
+        or ( nOldVelX > 0 and self.vVel.x < 0 ) then
+            self.vVel.x = 0
+        end
+    else
+        if self.vVel.x > self.CONST.MAX_VEL_X then
+            self.vVel.x = self.CONST.MAX_VEL_X
+        elseif self.vVel.x < -self.CONST.MAX_VEL_X then
+            self.vVel.x = -self.CONST.MAX_VEL_X
+        end
+    end
+
+    vPos.x = vPos.x + self.vVel.x * nTimeDelta
+
+	-----------------------------------
+	-- hardcoded edges
+	if vPos.x < -3000 then
+	    vPos.x = -6000 - vPos.x
+	    self.vVel.x = -self.vVel.x
+	end
+	if vPos.x > 3000 then
+	    vPos.x = 6000 - vPos.x
+	    self.vVel.x = -self.vVel.x
+	end
+    -----------------------------------
+	
+	vPos.y = self.CONST.FIXED_Y
+
+    self.hUnit:SetAbsOrigin( vPos )
+end
+
+------------------------------------------------------------
+-- Update vertical postion
+
+function BalloonController:UpdateVertical( nTimeDelta )
+	if not exist( self ) or not exist( self.hUnit ) then
+        return
+    end
+
+    local vPos = self.hUnit:GetOrigin()
+
+    self:UpdateAccZ()
+
+    self.vVel.z = self.vVel.z + self.vAcc.z * nTimeDelta
+
+    if self.vVel.z > self.CONST.MAX_VEL_RISE then
+        self.vVel.z = self.CONST.MAX_VEL_RISE
+    elseif self.vVel.x < -self.CONST.MAX_VEL_FALL then
+        self.vVel.x = -self.CONST.MAX_VEL_FALL
+    end
+
+    vPos.z = vPos.z + self.vVel.z * nTimeDelta
+
+    -----------------------------------
+    -- hardcoded bottom
+    if vPos.z <= 128 then
+        vPos.z = 128
+        self.vVel.z = 0
+    end
+    -----------------------------------
+
+    -----------------------------------
+    -- hardcoded top
+    if vPos.z > 2500 then
+        if not self.bTop then
+            self.bTop = true
+            self:BlockControlZ( true )
+        end
+    else
+        if self.bTop then
+            self.bTop = false
+            Timer( 0.5, function()
+                self:BlockControlZ( false )
+            end )
+        end
+    end
+    -----------------------------------
+
+    self.hUnit:SetAbsOrigin( vPos )
 end
 
 ------------------------------------------------------------
@@ -144,7 +253,11 @@ end
 
 function BalloonController:UpdateAccZ()
     if not self:IsBlockedControlZ() and self.nDirZ == 1 then
-        self.vAcc.z = self.CONST.ACC_RISE
+		if self.vVel.z < 0 then
+        	self.vAcc.z = self.CONST.ACC_RISE
+		else
+			self.vAcc.z = self.CONST.ACC_RISE * self.CONST.ACC_RISE_INTERP( self.vVel.z / self.CONST.MAX_VEL_RISE )
+		end
     else
         self.vAcc.z = -self.CONST.ACC_FALL
     end
@@ -163,4 +276,11 @@ end
 
 function BalloonController:IsBlockedControlZ()
     return self.nBlockZ > 0
+end
+
+------------------------------------------------------------
+-- Calculate XZ speed
+
+function BalloonController:GetSpeed()
+	return #self.vVel
 end
