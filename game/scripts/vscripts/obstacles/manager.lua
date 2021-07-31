@@ -32,10 +32,12 @@ function Obstacles:CreateFromTrigger( hTrigger, tMaterial )
 		r = vMax.x,
 		t = vMax.z,
 	}
-	table.print( tEdges )
 
 	Obstacle( tEdges, tMaterial )
 end
+
+------------------------------------------------------------------
+-- Find all obstacles between points
 
 function Obstacles:FindCollisions( v1, v2, nRadius )
 	local tCollisions = {}
@@ -46,7 +48,7 @@ function Obstacles:FindCollisions( v1, v2, nRadius )
 	end
 
 	for _, hObstacle in ipairs( self.qList ) do
-		local nCollision, vPos = hObstacle:FindCollision( v1, v2, nRadius )
+		local nCollision, vPos, vCollision = hObstacle:FindCollision( v1, v2, nRadius )
 		if nCollision then
 			bHas = true
 			local nType = hObstacle:GetType()
@@ -61,6 +63,7 @@ function Obstacles:FindCollisions( v1, v2, nRadius )
 			table.insert( qCollisions, i, {
 				hObstacle = hObstacle,
 				nCollision = nCollision,
+				vCollision = vCollision,
 				vPos = vPos,
 			})
 		end

@@ -13,6 +13,7 @@ function BalloonController:constructor( hUnit )
     self.vAcc = Vector( 0, 0, 0 )
     self.nBlockZ = 0
     self.tSpaces = {}
+    self.nSpaces = 0
 
 	self:ApplySettings({})
 
@@ -138,23 +139,6 @@ function BalloonController:UpdateVertical( nTimeDelta )
 
     vPos.z = vPos.z + self.vVel.z * nTimeDelta
 
-    -----------------------------------
-    -- hardcoded top
-    if vPos.z > 2500 then
-        if not self.bTop then
-            self.bTop = true
-            self:BlockControlZ( true )
-        end
-    else
-        if self.bTop then
-            self.bTop = false
-            Timer( 0.5, function()
-                self:BlockControlZ( false )
-            end )
-        end
-    end
-    -----------------------------------
-
     self:SetPos( vPos )
 
     self:UpdateCollision()
@@ -165,7 +149,8 @@ end
 
 function BalloonController:UpdateCollision()
     local vPos = self:GetPos()
-    local tCollisions = Obstacles:FindCollisions( self:GetCenter( self.vOldPos ), self:GetCenter( vPos ), self.CONST.HITBOX_RADIUS )
+    local vCenter = self:GetCenter( vPos )
+    local tCollisions = Obstacles:FindCollisions( self:GetCenter( self.vOldPos ), vCenter, self.CONST.HITBOX_RADIUS )
 
     if tCollisions then
         --------------------------------------------------------
@@ -198,6 +183,11 @@ function BalloonController:UpdateCollision()
             end
 
             self:SetPos( vPos )
+            self.vOldPos = vColPos
+
+            self:UpdateCollision()
+
+            return
         end
 
         --------------------------------------------------------
@@ -208,14 +198,20 @@ function BalloonController:UpdateCollision()
             for _, t in pairs( q ) do
                 if not self.tSpaces[ t.hObstacle ] then
                     self.tSpaces[ t.hObstacle ] = true
+                    self.nSpaces = self.nSpaces + 1
+
                     self:BlockControlZ( true )
                 end
             end
         end
+    end
 
+    if self.nSpaces > 0 then
         for hObstacle in pairs( self.tSpaces ) do
-            if not hObstacle:IsColliding( vPos, self.CONST.HITBOX_RADIUS ) then
+            if not hObstacle:IsColliding( vCenter, self.CONST.HITBOX_RADIUS ) then
                 self.tSpaces[ hObstacle ] = nil
+                self.nSpaces = self.nSpaces - 1
+
                 Timer( hObstacle.MATERIAL.DISABLE_TIME, function()
                     self:BlockControlZ( false )
                 end )
@@ -230,7 +226,7 @@ function BalloonController:UpdateCollision()
     for _, hHero in pairs( qHeroes ) do
         local other = hHero.Balloon
         if hHero ~= self.hUnit and exist( other ) then
-            local vPos1 = self:GetCenter( vPos )
+            local vPos1 = vCenter
             local vPos2 = other:GetCenter()
             local nColDistance = self.CONST.HITBOX_RADIUS + other.CONST.HITBOX_RADIUS
             local vDelta = vPos1 - vPos2; vDelta.y = 0

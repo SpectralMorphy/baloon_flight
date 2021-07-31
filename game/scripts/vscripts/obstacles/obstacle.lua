@@ -55,22 +55,22 @@ function Obstacle:FindCollision( v1, v2, nRadius )
 
 	local x, z = fIntersect( v1.x, v1.z, v2.x, v2.z, self.tEdges.l - nRadius, self.tEdges.b, self.tEdges.t )
 	if x then
-		return Obstacle.COLLISION.LEFT, Vector( x, 0, z )
+		return Obstacle.COLLISION.LEFT, Vector( x, 0, z ), Vector( self.tEdges.l, 0, z )
 	end
 
 	local x, z = fIntersect( v2.x, v2.z, v1.x, v1.z, self.tEdges.r + nRadius, self.tEdges.b, self.tEdges.t )
 	if x then
-		return Obstacle.COLLISION.RIGHT, Vector( x, 0, z )
+		return Obstacle.COLLISION.RIGHT, Vector( x, 0, z ), Vector( self.tEdges.r, 0, z )
 	end
 
 	local z, x = fIntersect( v2.z, v2.x, v1.z, v1.x, self.tEdges.t + nRadius, self.tEdges.l, self.tEdges.r )
 	if x then
-		return Obstacle.COLLISION.TOP, Vector( x, 0, z )
+		return Obstacle.COLLISION.TOP, Vector( x, 0, z ), Vector( x, 0, self.tEdges.t )
 	end
 
 	local z, x = fIntersect( v1.z, v1.x, v2.z, v2.x, self.tEdges.b - nRadius, self.tEdges.l, self.tEdges.r )
 	if x then
-		return Obstacle.COLLISION.BOT, Vector( x, 0, z )
+		return Obstacle.COLLISION.BOT, Vector( x, 0, z ), Vector( x, 0, self.tEdges.b )
 	end
 end
 
@@ -79,5 +79,5 @@ end
 
 function Obstacle:IsColliding( vPos, nRadius )
 	return vPos.x + nRadius >= self.tEdges.l and vPos.x - nRadius <= self.tEdges.r
-		and vPos.y + nRadius >= self.tEdges.b and vPos.y - nRadius <= self.tEdges.t
+		and vPos.z + nRadius >= self.tEdges.b and vPos.z - nRadius <= self.tEdges.t
 end
