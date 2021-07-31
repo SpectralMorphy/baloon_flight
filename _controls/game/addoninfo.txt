@@ -1,0 +1,23 @@
+"AddonInfo"
+{
+	"PenaltiesEnabled"	"0"
+	"CheckAFKPlayers"	"0"
+	"EnablePickRules"	"0"
+	"HeroGuidesSupported"	"0"
+	"ForceDefaultGuide"		"0"
+	"MinimalPrecache"	"0"
+	"EventGame"			"0"
+	"DisableIK"			"0"
+	
+	"maps"		"demo poligon"
+
+	"demo"
+	{
+		"MaxPlayers"	"5"
+	}
+
+	"poligon"
+	{
+		"MaxPlayers"	"5"
+	}
+}
