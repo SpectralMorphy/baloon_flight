@@ -1,5 +1,5 @@
-set dota_folder=C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta
-set addon_name=balloon
+set dota_folder=C:\Steam\steamapps\common\dota 2 beta
+set addon_name=ballon
 
 set game_folder=%dota_folder%\game\dota_addons\%addon_name%
 set content_folder=%dota_folder%\content\dota_addons\%addon_name%
