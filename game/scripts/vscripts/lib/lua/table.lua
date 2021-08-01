@@ -25,10 +25,16 @@ table.overlay( [ table ... ] ) => table
 table.contact( itable | nil, itable | nil ) => itable
 
 -- Remove elements wich does not match condition.
-table.filter( itable, condition: function( value, index, table ): boolean ) => itable
+table.filter( itable, condition: function( value: ?, index: number, table ) => ? -> boolean ) => itable
+
+-- reduce ...
+table.reduce( itable, function( result: ?, value: ?, index: number, table ) => ?, v0: ? | nil ) => ?
+
+-- map ..
+table.map( table, function( value: ?, key: ?, table ) => ?, iterable: -> boolean ) => table
 
 -- Get random table element. If use_weights is true, table values will be used as weights (assuming they are numbers).
-table.random( table [, use_weights: ? -> boolean, stream: CScriptUniformRandomStream ] ) => key: ?, value: ?
+table.random( table [, useWeights: ? -> boolean, stream: CScriptUniformRandomStream ] ) => key: ?, value: ?
 
 -- Deep print table.
 table.print( table [, options: table ] ) => nil | { string ... }
@@ -151,6 +157,31 @@ function table.filter( t, f )
 	end
 
 	return qNew
+end
+
+function table.map( t, f, bIterable )
+	local iter = bIterable and ipairs or pairs
+	local tNew = {}
+
+	for k, v in iter( t ) do
+		tNew[ k ] = f( v, k, t )
+	end
+
+	return tNew
+end
+
+function table.reduce( q, f, v )
+	local i = 1
+	if v == nil then
+		v = q[i]
+		i = i + 1
+	end
+
+	for i = i, #q do
+		v = f( v, q[i], i, q )
+	end
+
+	return v
 end
 
 function table.overlay( t1, t2, ... )
