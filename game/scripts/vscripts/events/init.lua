@@ -40,6 +40,8 @@ function BalloonFlight:ListenToClientEvent( sEvent, fCallback )
 
     if fCallback then
         local nListener = CustomGameEventManager:RegisterListener( sEvent, function( nPlayerIndex, t )
+            Log:Add('sv event '..sEvent..' '..tostring(nPlayerIndex)..' '..tostring(t.PlayerID))
+
 			if PlayerResource:IsValidPlayer( t.PlayerID ) then
 				fCallback( t )
 			else
@@ -50,6 +52,7 @@ function BalloonFlight:ListenToClientEvent( sEvent, fCallback )
 
 				Timer( function()
 					if not exist( hPlayer ) then
+                        Log:Add('sv event fail: no player')
 						return
 					end
 
@@ -59,6 +62,7 @@ function BalloonFlight:ListenToClientEvent( sEvent, fCallback )
 							nLimit = nLimit - 1
 							return 1/30
 						else
+                            Log:Add('sv event fail: initialization timeout')
 							print("Player initialization timeout")
 							return
 						end

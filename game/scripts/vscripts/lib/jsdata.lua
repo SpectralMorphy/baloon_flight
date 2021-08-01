@@ -15,6 +15,12 @@ end
 
 local function SendPlayerJsData( nPlayer, sKey )
 	local hPlayer = PlayerResource:GetPlayer( nPlayer )
+	if sKey == 'CameraSettings' then
+		Log:Add('jsdata sv send camera '..nPlayer)
+		if not exist(hPlayer) then
+			Log:Add('player unknown')
+		end
+	end
 	if exist( hPlayer ) then
 		CustomGameEventManager:Send_ServerToPlayer( hPlayer, 'cl_jsdata_set', {
 			sKey = sKey,
@@ -80,6 +86,8 @@ function GetPlayerJsData( nPlayer, sKey )
 	end
 end
 
+Log:Add('jsdata sv register for request')
 BalloonFlight:ListenToClientEvent( 'sv_jsdata_request', function( t )
+	Log:Add('jsdata sv get request')
 	SendAllPlayerJsData( t.PlayerID )
 end )

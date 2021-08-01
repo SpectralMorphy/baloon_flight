@@ -42,6 +42,7 @@ end
 -- Setup gamemode (Called when Activate or Reload)
 
 function BalloonFlight:Load()
+	require 'log'
 	require 'lib/timer'
 	require 'util'
 	require 'events/init'
@@ -60,6 +61,7 @@ function BalloonFlight:Load()
 
 	Obstacles:RegisterTriggers()
 
+	Log:Add('sv activate')
 	CustomGameEventManager:Send_ServerToAllClients( 'cl_activate', {} )
 end
 
