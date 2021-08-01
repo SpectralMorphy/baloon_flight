@@ -273,6 +273,8 @@ function BalloonController:UpdateCollision()
             end
         end
     end
+    
+    self.vOldPos = vPos * 1
 end
 
 ------------------------------------------------------------
