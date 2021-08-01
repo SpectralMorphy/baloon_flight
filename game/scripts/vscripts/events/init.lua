@@ -42,7 +42,7 @@ function BalloonFlight:ListenToClientEvent( sEvent, fCallback )
         local nListener = CustomGameEventManager:RegisterListener( sEvent, function( nPlayerIndex, t )
             Log:Add('sv event '..sEvent..' '..tostring(nPlayerIndex)..' '..tostring(t.PlayerID))
 
-			if PlayerResource:IsValidPlayer( t.PlayerID ) then
+			if t.PlayerID and PlayerResource:IsValidPlayer( t.PlayerID ) then
 				fCallback( t )
 			else
 				local hPlayer = EntIndexToHScript( nPlayerIndex )
