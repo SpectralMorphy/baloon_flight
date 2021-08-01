@@ -45,27 +45,31 @@ function BalloonFlight:ListenToClientEvent( sEvent, fCallback )
 			if t.PlayerID and PlayerResource:IsValidPlayer( t.PlayerID ) then
 				fCallback( t )
 			else
-				local hPlayer = EntIndexToHScript( nPlayerIndex )
+                if not nPlayerIndex then
+                    Log:Add('event pizdets')
+                end
 
-				local nLimit = 100
+				local nLimit = 1000
 				local bSucc = false
 
+                local function fCheckLimit()
+                    if nLimit > 0 then
+                        nLimit = nLimit - 1
+                        return 1/30
+                    end
+                    Log:Add('sv event fail: initialization timeout')
+                end
+
 				Timer( function()
+                    local hPlayer = EntIndexToHScript( nPlayerIndex )
+
 					if not exist( hPlayer ) then
-                        Log:Add('sv event fail: no player')
-						return
+						return fCheckLimit()
 					end
 
 					local nPlayer = hPlayer:GetPlayerID()
 					if not PlayerResource:IsValidPlayer( nPlayer ) then
-						if nLimit > 0 then
-							nLimit = nLimit - 1
-							return 1/30
-						else
-                            Log:Add('sv event fail: initialization timeout')
-							print("Player initialization timeout")
-							return
-						end
+						return fCheckLimit()
 					end
 
 					bSucc = true

@@ -186,7 +186,6 @@ function BalloonController:UpdateCollision()
             self.vOldPos = vColPos
 
             self:UpdateCollision()
-
             return
         end
 
@@ -237,6 +236,8 @@ function BalloonController:UpdateCollision()
                 -------------------------------------------------
                 -- Collision physics 1
 
+                self.vOldPos = vPos * 1
+
                 local m1 = self.CONST.MASS
                 local m2 = other.CONST.MASS
                 local m = m1 + m2
@@ -266,11 +267,12 @@ function BalloonController:UpdateCollision()
 
                 vPos = self:CenterToPos( vPos1 )
                 self:SetPos( vPos )
+
+                self:UpdateCollision()
+                return
             end
         end
     end
-
-    self.vOldPos = vPos * 1
 end
 
 ------------------------------------------------------------
