@@ -58,6 +58,7 @@ function BalloonFlight:Load()
 	GameModeEntity:SetDaynightCycleDisabled( true )
 	GameModeEntity:SetFogOfWarDisabled( true )
 	GameModeEntity:SetCameraZRange( 0, MAP.RENDER_DISTANCE )
+	GameModeEntity:SetCustomGameForceHero('npc_dota_hero_wisp')
 
 	Obstacles:RegisterTriggers()
 
