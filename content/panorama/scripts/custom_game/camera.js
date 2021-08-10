@@ -5,6 +5,7 @@ var Camera = {};
 // Initialization
 
 Camera.Init = function(){
+	$.Msg('['+Game.GetGameTime()+']: camera register');
 	_G.ListenJsData( 'CameraSettings', t => {
 		Camera.ChangeSettings( t );
 	})
@@ -16,6 +17,7 @@ Camera.Init = function(){
 // Apply camera settings
 
 Camera.ChangeSettings = function( t ){
+	$.Msg('Camera settings');
 	t.PITCH = t.PITCH || 0;
 	t.DISTANCE = t.DISTANCE || 1000;
 	t.HEIGHT_OFFSET = t.HEIGHT_OFFSET || 0;

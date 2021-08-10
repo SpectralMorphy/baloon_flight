@@ -24,3 +24,12 @@ _G.SetCommand = function( sCommand, fCallback ){
 
     _G.tCommands[ sCommand ] = fCallback;
 }
+
+GameEvents.Subscribe('cl_pring_log', function (qMsgs) {
+	for( let k in qMsgs ){
+		let t = qMsgs[k];
+		$.Msg( '[' + t.nTime + ']:\t' + t.sMsg )
+	}
+})
+
+$.Msg('main init');

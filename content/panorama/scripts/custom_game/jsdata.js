@@ -28,6 +28,7 @@ _G.UnlistenJsData = function( sKey, fCallback ){
 }
 
 function __JsData_Init(){
+	$.Msg('['+Game.GetGameTime()+']: jsdata cl request (init)');
 	GameEvents.SendCustomGameEventToServer( 'sv_jsdata_request', {} );
 }
 
@@ -39,6 +40,7 @@ GameEvents.Subscribe( 'cl_jsdata_set', function( t ){
 });
 
 GameEvents.Subscribe( 'cl_activate', function(){
+	$.Msg('['+Game.GetGameTime()+']: jsdata activate');
 	__JsData_Init();
 });
 
