@@ -9,13 +9,17 @@
 	"EventGame"			"0"
 	"DisableIK"			"0"
 	
-	"maps"		"demo poligon"
+	"maps"		"demo poligon map_1"
 
 	"demo"
 	{
 		"MaxPlayers"	"5"
 	}
 	"poligon"
+	{
+		"MaxPlayers"	"5"
+	}
+	"map_1"
 	{
 		"MaxPlayers"	"5"
 	}

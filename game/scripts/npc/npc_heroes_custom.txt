@@ -2,9 +2,9 @@
 {
 	"npc_dota_hero_wisp"
 	{
-		"AbilityLayout"         "7"
-        "Model"					"models/courier/minipudge/minipudge_flying.vmdl"
-        "ModelScale"			"0.4"
+	"AbilityLayout"         "7"
+        "Model"			"models/courier/minipudge/minipudge_flying.vmdl"
+        "ModelScale"		"0.4"
         "SoundSet"              "0"
     
         "Ability1"              "generic_hidden"
@@ -63,5 +63,7 @@
 
         "VisionDaytimeRange"        "1800"
         "VisionNighttimeRange"      "1800"
+
+        "DisableWearables"          "1"
 	}
 }

@@ -1,7 +1,7 @@
 MAPS = {
 	DEFAULT = {
 		FIXED_Y = 0,
-		RENDER_DISTANCE = 5000,
+		RENDER_DISTANCE = 50000,
 	},
 }
 
