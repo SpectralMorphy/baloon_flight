@@ -100,16 +100,19 @@ function BalloonController:UpdateHorizontal( nTimeDelta )
     self.vVel.x = self.vVel.x + self.vAcc.x * nTimeDelta
 
     if self.nDirX == 0 then
-        if ( nOldVelX < 0 and self.vVel.x > 0 )
-        or ( nOldVelX > 0 and self.vVel.x < 0 ) then
+        if ( nOldVelX <= 0 and self.vVel.x > 0 )
+        or ( nOldVelX >= 0 and self.vVel.x < 0 ) then
             self.vVel.x = 0
         end
     else
-        if self.vVel.x > self.CONST.MAX_VEL_X then
-            self.vVel.x = self.CONST.MAX_VEL_X
-        elseif self.vVel.x < -self.CONST.MAX_VEL_X then
-            self.vVel.x = -self.CONST.MAX_VEL_X
-        end
+		local nAbsVelX = math.abs( self.vVel.x )
+		local nAbsOldVelX = math.abs( nOldVelX )
+		if nAbsVelX > 0 and self.nDirX == self.vVel.x / nAbsVelX then
+			if ( nAbsOldVelX <= self.CONST.MAX_VEL_X and nAbsVelX > self.CONST.MAX_VEL_X )
+			or ( nAbsOldVelX >= self.CONST.MAX_VEL_X and nAbsVelX < self.CONST.MAX_VEL_X ) then
+				self.vVel.x = self.nDirX * self.CONST.MAX_VEL_X
+			end
+		end
     end
 
     vPos.x = vPos.x + self.vVel.x * nTimeDelta
@@ -379,9 +382,9 @@ function BalloonController:UpdateAccX()
             self.vAcc.x = self.CONST.ACC_X
         end
     else
-        local nVelOrient = math.max( 0, self.vVel.x * self.nDirX )
-        local nVelPct = nVelOrient / self.CONST.MAX_VEL_X
-        self.vAcc.x = self.nDirX * self.CONST.ACC_X * self.CONST.ACC_X_INTERP( nVelPct )
+		local nVelOrient = math.max( 0, self.vVel.x * self.nDirX )
+		local nInterp = Interp( self.CONST.ACC_X_INTERP, nVelOrient, self.CONST.MIN_VEL_X_INTERP, self.CONST.MAX_VEL_X )
+		self.vAcc.x = self.nDirX * self.CONST.ACC_X * nInterp
     end
 end
 
@@ -389,12 +392,11 @@ end
 -- Calculate z acceleration
 
 function BalloonController:UpdateAccZ()
-    if not self:IsBlockedControlZ() and self.nDirZ == 1 then
-		if self.vVel.z < 0 then
-        	self.vAcc.z = self.CONST.ACC_RISE
-		else
-			self.vAcc.z = self.CONST.ACC_RISE * self.CONST.ACC_RISE_INTERP( self.vVel.z / self.CONST.MAX_VEL_RISE )
-		end
+	if self.vVel.z < -self.CONST.MAX_VEL_FALL then
+		self.vAcc.z = self.CONST.ACC_FALL
+	elseif not self:IsBlockedControlZ() and self.nDirZ == 1 then
+		local nInterp = Interp( self.CONST.ACC_RISE_INTERP, self.vVel.z, self.CONST.MIN_VEL_RISE_INTERP, self.CONST.MAX_VEL_RISE )
+		self.vAcc.z = self.CONST.ACC_RISE * nInterp
     else
         self.vAcc.z = -self.CONST.ACC_FALL
     end
