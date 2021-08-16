@@ -26,9 +26,12 @@ end
 -- Apply interpolation
 
 function Interp( f, v, min, max )
+	if v > max then
+		return -1
+	end
 	local delta = max - min
 	if delta > 0 then
 		return f( math.max( 0, math.min( 1, ( v - min ) / delta ) ) )
 	end
-	return v > max and -1 or 1
+	return 1
 end

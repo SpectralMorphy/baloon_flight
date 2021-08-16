@@ -2,10 +2,19 @@
 {
 	"npc_dota_hero_wisp"
 	{
-	"AbilityLayout"         "7"
-        "Model"			"models/courier/minipudge/minipudge_flying.vmdl"
-        "ModelScale"		"0.4"
-        "SoundSet"              "0"
+        "Model"			"models/items/courier/butch_pudge_dog/butch_pudge_dog.vmdl"
+        "ModelScale"		"0.5"
+		"WalkAnimIdle"		"ACT_DOTA_IDLE"
+		"WalkAnimRun"		"ACT_DOTA_RUN"
+		"WalkAnimFall"		"ACT_DOTA_RUN"
+
+		"FlyModel"		"models/items/courier/butch_pudge_dog/butch_pudge_dog_flying.vmdl"
+		"FlyModelScale"		"0.55"
+		"FlyAnimIdle"		"ACT_DOTA_IDLE"
+		"FlyAnimRun"		"ACT_DOTA_RUN"
+
+
+        "SoundSet"              ""
     
         "Ability1"              "generic_hidden"
         "Ability2"              "generic_hidden"

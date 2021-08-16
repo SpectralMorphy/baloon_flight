@@ -34,6 +34,8 @@ end
 -- Called then addon was reloaded (script_reload)
 
 function BalloonFlight:Reload()
+	-- local hHero = PlayerResource:GetSelectedHeroEntity( 0 )
+	-- hHero:
 
 	self:Load()
 end

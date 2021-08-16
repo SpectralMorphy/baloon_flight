@@ -14,7 +14,7 @@ MATERIAL = {
 		BOT_EVENTS = {},
 	},
 	simple = {
-		TOP_BOUNCE = 0.4,
+		TOP_BOUNCE = 0.5,
 		SIDE_BOUNCE = 1,
 		BOT_BOUNCE = 1,
 		TOP_EVENTS = {'IMPACT','WALK'},

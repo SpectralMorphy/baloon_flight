@@ -1,6 +1,13 @@
 modifier_balloon = class{}
 
 ------------------------------------------------------------
+-- properties
+
+function modifier_balloon:GetAttributes()
+	return MODIFIER_ATTRIBUTE_PERMANENT
+end
+
+------------------------------------------------------------
 -- States
 
 function modifier_balloon:CheckState()
