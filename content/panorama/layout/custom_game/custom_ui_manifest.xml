@@ -5,7 +5,9 @@
 	</scripts>
 
 	<Panel>
+		<CustomUIElement type="Hud"	layoutfile="file://{resources}/layout/custom_game/precache_images.xml" />
 		<CustomUIElement type="Hud"	layoutfile="file://{resources}/layout/custom_game/hud_main.xml" />
+		<CustomUIElement type="Hud"	layoutfile="file://{resources}/layout/custom_game/hero_pick.xml" />
 	</Panel>
 </root>
 

@@ -1,7 +1,7 @@
 var _G = GameUI.CustomUIConfig();
 
-_G.__JsData_tData = _G.__JsData_tData || {};
-_G.__JsData_tListens = _G.__JsData_tListens || {};
+_G.__JsData_tData = {};
+_G.__JsData_tListens = {};
 
 _G.GetJsData = function( sKey ){
 	return _G.__JsData_tData[ sKey ];

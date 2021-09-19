@@ -34,8 +34,6 @@ end
 -- Called then addon was reloaded (script_reload)
 
 function BalloonFlight:Reload()
-	-- local hHero = PlayerResource:GetSelectedHeroEntity( 0 )
-	-- hHero:
 
 	self:Load()
 end
@@ -53,16 +51,28 @@ function BalloonFlight:Load()
 	require 'obstacles/init'
 	require 'settings/all'
 	require 'camera'
+	require 'round'
+	require 'console'
+	
+	for n = 1, 300 do
+		Timer(1/30, function(nDT)
+			print(n, nDT)
+			return 1/30
+		end)
+	end
 
 	local GameModeEntity = GameRules:GetGameModeEntity()
 
+	GameRules:SetPreGameTime(0)
 	GameRules:SetCustomGameSetupAutoLaunchDelay( 0 )
 	GameModeEntity:SetDaynightCycleDisabled( true )
 	GameModeEntity:SetFogOfWarDisabled( true )
 	GameModeEntity:SetCameraZRange( 0, MAP.RENDER_DISTANCE )
 	GameModeEntity:SetCustomGameForceHero('npc_dota_hero_wisp')
 
-	Obstacles:RegisterTriggers()
+	GameModeEntity:SetExecuteOrderFilter(function()
+		return false
+	end, self)
 
 	Log:Add('sv activate')
 	CustomGameEventManager:Send_ServerToAllClients( 'cl_activate', {} )

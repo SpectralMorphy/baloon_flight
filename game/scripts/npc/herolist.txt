@@ -1,4 +1,7 @@
-"CustomHeroList"
-{
-	"npc_dota_hero_wisp"	"1"
+"CustomHeroList"{
+	"npc_dota_hero_doom_bringer"	"1"
+	"npc_dota_hero_pudge"			"1"
+	"npc_dota_hero_roshan"			"1"
+	"npc_dota_hero_techies"			"1"
+	"npc_dota_hero_winter_wyvern"	"1"
 }

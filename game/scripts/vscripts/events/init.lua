@@ -2,7 +2,8 @@
 -- List of events to register
 
 local tGameEvents = {
-    npc_spawned = true,
+    -- npc_spawned = true,
+	game_rules_state_change = true,
 }
 
 local tClientEvents = {

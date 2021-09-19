@@ -23,6 +23,6 @@ PHYSICS = {
 		WALK_INTERP_MIN_SPEED = 0,
 		JUMP_SPEED = 250,
 
-		FIXED_Y = MAP.FIXED_Y,
+		FIXED_Y = 0,
 	},
 }

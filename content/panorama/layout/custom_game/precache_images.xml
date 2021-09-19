@@ -1,0 +1,13 @@
+<root>
+	<script>
+		$.GetContextPanel().DeleteAsync(0);
+	</script>
+
+	<Panel style="visibility:collapse;">
+		<Image src="file://{images}/custom_game/hero_pick/npc_dota_hero_doom_bringer.png"/>
+		<Image src="file://{images}/custom_game/hero_pick/npc_dota_hero_pudge.png"/>
+		<Image src="file://{images}/custom_game/hero_pick/npc_dota_hero_roshan.png"/>
+		<Image src="file://{images}/custom_game/hero_pick/npc_dota_hero_techies.png"/>
+		<Image src="file://{images}/custom_game/hero_pick/npc_dota_hero_winter_wyvern.png"/>
+	</Panel>
+</root>

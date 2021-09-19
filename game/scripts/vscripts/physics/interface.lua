@@ -3,7 +3,7 @@ BalloonController = BalloonController or class({})
 ------------------------------------------------------------
 -- Apply custom physics to unit and link controller interface to it.
 
-function BalloonController:constructor( hUnit )
+function BalloonController:constructor( hUnit, tConst )
     self.bNull = false
     self.bMoveLeft = false
     self.bMoveRight = false
@@ -23,17 +23,19 @@ function BalloonController:constructor( hUnit )
 		self.nSolids[ nCol ] = 0
 	end
 
-	self:ApplySettings({})
+	self:ApplySettings(tConst or {})
 
     self.hUnit = hUnit
     hUnit.Balloon = self
 
-    self.hMod = hUnit:AddNewModifier( hUnit, nil, 'modifier_balloon', {} )
+	self.hModTimer = Timer(function()
+    	self.hMod = hUnit:AddNewModifier( hUnit, nil, 'modifier_balloon', {} )
 
-    if not exist( self.hMod ) then
-        self:Destroy()
-        error( 'BalloonController: Failed to apply balloon modifier to unit ' .. hUnit:GetUnitName() )
-    end
+		if not exist( self.hMod ) then
+			print('retry')
+			return 1/30
+		end
+	end)
 
 	local tUnitKV = KV.HEROES[ hUnit:GetUnitName() ]
 	if tUnitKV then
@@ -57,6 +59,20 @@ function BalloonController:constructor( hUnit )
 	self.sForm = 'FLY'
 	self:StartWalk()
 	self:SetFalling( false )
+
+	self.hThinkTimer = Timer(1/30, function(nDT)
+		if not exist(self.hUnit) then
+			print('DESTROY')
+			self:Destroy()
+			return
+		end
+
+		print(self.vOldPos, self:GetPos())
+		self:UpdateHorizontal(nDT)
+		self:UpdateVertical(nDT)
+
+		return 1/30
+	end)
 end
 
 ------------------------------------------------------------
@@ -71,6 +87,15 @@ function BalloonController:Destroy()
 
     if exist( self.hMod ) then
         self.hMod:Destroy()
+    end
+
+    if exist( self.hModTimer ) then
+        self.hModTimer:Destroy()
+    end
+
+    if exist( self.hThinkTimer ) then
+		print('CYKA!1')
+        self.hThinkTimer:Destroy()
     end
 
     if exist( self.hUnit ) then
@@ -111,8 +136,6 @@ function BalloonController:UpdateHorizontal( nTimeDelta )
 	if not exist( self ) or not exist( self.hUnit ) then
         return
     end
-
-	print('upd',self.hUnit)
 
     local vPos = self:GetPos()
 	local nMaxVel = self:GetMaxSpeedX()
@@ -283,7 +306,7 @@ function BalloonController:UpdateCollision()
 		for hObstacle in pairs( t ) do
 			if not hObstacle:IsColliding( vCenter, self.CONST.HITBOX_RADIUS ) then
 				t[ hObstacle ] = nil
-				fRemove()
+				fRemove( hObstacle )
 			end
 		end
 	end
@@ -369,7 +392,7 @@ function BalloonController:UpdateCollision()
     ------------------------------------------------------
     -- Removing colliders
 
-    fCheckCollidings( self.tSpaces, function()
+    fCheckCollidings( self.tSpaces, function( hObstacle )
 		self.nSpaces = self.nSpaces - 1
 
 		Timer( hObstacle.MATERIAL.DISABLE_TIME, function()
@@ -423,7 +446,6 @@ function BalloonController:UpdateCollision()
 					local c = dsx^2 + dsy^2 - (nColDistance+1)^2
 					t = -( b + math.sqrt( b^2 - 4*a*c ) ) / ( 2*a )
 					t = tonumber( tostring( t ) )
-					print(t)
 					if t then
 						vPos1 = vPos1 + self.vVel * t
 						vPos2 = vPos2 + other.vVel * t

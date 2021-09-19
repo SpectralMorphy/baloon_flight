@@ -1,0 +1,38 @@
+<root>
+	<styles>
+		<include src="file://{resources}/styles/custom_game/hero_pick.css" />
+	</styles>
+
+	<scripts>
+		<include src="file://{resources}/scripts/custom_game/hero_pick.js" />
+	</scripts>
+	
+	<snippets>
+		<snippet name="HeroPickOption">
+			<Panel class="HeroPickOption">
+				<Panel id="HeroImage"/>
+				<Panel id="LockedOverlay">
+					<Button id="LockedBuyButton">
+						<Label text="КУПИТЬ!!1"/>
+					</Button>
+					<Panel id="LockedIcon"/>
+				</Panel>
+			</Panel>
+		</snippet>
+	</snippets>
+
+	<Panel class="HeroPickRoot">
+		<Panel id="PickContainer">
+			<Panel id="HeroDescription">
+				<Image class="AbilityPanel" id="PassiveTest" src="s2r://panorama/images/spellicons/pudge_flesh_heap_png.vtex"/>
+				<Image class="AbilityPanel" id="ActiveTest" src="s2r://panorama/images/spellicons/pudge_meat_hook_png.vtex"/>
+				<Image class="AbilityPanel" id="TestStyledTooltip" src="s2r://panorama/images/compendium/international2017/prestigerewards/question_quest_png.vtex"/>
+			</Panel>
+			<Panel id="HeroPool"/>
+			<Button id="SelectButton" class="Inactive">
+				<Label text="SELECT"/>
+			</Button>
+		</Panel>
+		<Label id="PickTimer"/>
+	</Panel>
+</root>

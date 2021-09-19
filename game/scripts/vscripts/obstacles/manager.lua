@@ -5,13 +5,14 @@ Obstacles.qList = Obstacles.qList or {}
 ------------------------------------------------------------------
 -- Create obstacles from material triggers
 
-function Obstacles:RegisterTriggers()
+function Obstacles:RegisterTriggers(fFilter)
+	self.qList = {}
 	local qTriggers = Entities:FindAllByClassname('trigger_dota')
 	
 	for _, hTrigger in ipairs( qTriggers ) do
 		local sName = hTrigger:GetName()
-		if sName:match('^material_') then
-			local sMaterial = sName:gsub( 'material_', '' )
+		if sName:match('^material_') and (not fFilter or fFilter(hTrigger)) then
+			local sMaterial = sName:gsub( 'material_', '' ):gsub('_?%d*', '')
 			local tMaterial = MATERIAL[ sMaterial ]
 			self:CreateFromTrigger( hTrigger, tMaterial )
 		end

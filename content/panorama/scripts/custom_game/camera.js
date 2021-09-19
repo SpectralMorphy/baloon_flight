@@ -47,8 +47,8 @@ Camera.IsDistanceDynamic = function(){
 
 Camera.Update = function(){
 	if( !this.SETTINGS ) return;
-
     let nHero = Players.GetPlayerHeroEntityIndex( Players.GetLocalPlayer() );
+	if(nHero < 1) return;
     let vPos = Entities.GetAbsOrigin( nHero );
 	if( !vPos ) return;
 

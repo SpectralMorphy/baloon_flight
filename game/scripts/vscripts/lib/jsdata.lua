@@ -86,6 +86,10 @@ function GetPlayerJsData( nPlayer, sKey )
 	end
 end
 
+function AddPlayerJsData(nPlayer, sKey, tData)
+	SetPlayerJsData(nPlayer, sKey, table.overlay(GetPlayerJsData(nPlayer, sKey), tData))
+end
+
 Log:Add('jsdata sv register for request')
 BalloonFlight:ListenToClientEvent( 'sv_jsdata_request', function( t )
 	Log:Add('jsdata sv get request')
