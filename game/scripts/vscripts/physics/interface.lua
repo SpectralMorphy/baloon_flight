@@ -32,7 +32,6 @@ function BalloonController:constructor( hUnit, tConst )
     	self.hMod = hUnit:AddNewModifier( hUnit, nil, 'modifier_balloon', {} )
 
 		if not exist( self.hMod ) then
-			print('retry')
 			return 1/30
 		end
 	end)

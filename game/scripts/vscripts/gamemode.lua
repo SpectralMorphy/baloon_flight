@@ -53,13 +53,6 @@ function BalloonFlight:Load()
 	require 'camera'
 	require 'round'
 	require 'console'
-	
-	for n = 1, 300 do
-		Timer(1/30, function(nDT)
-			print(n, nDT)
-			return 1/30
-		end)
-	end
 
 	local GameModeEntity = GameRules:GetGameModeEntity()
 

@@ -193,11 +193,7 @@ function Timer:Schedule( nTime )
 	
 	local nCurrent = GameRules:GetGameTime()
 	
-	if nCurrent > nTime then
-		return
-	end
-	
-	if nCurrent == nTime then
+	if nCurrent >= nTime then
 		self:Skip( nTime )
 		return
 	end
