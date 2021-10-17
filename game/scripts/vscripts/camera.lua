@@ -10,12 +10,26 @@ function ApplyCameraSettings( nPlayer, tSettings )
 end
 
 -----------------------------------------------------------------
+-- Set forced camera position
+
+function SetCameraTargetPosition( nPlayer, vTarget, nTime )
+	local tSettings = GetPlayerJsData( nPlayer, 'CameraSettings' ) or table.deepcopy( CAMERA.DEFAULT )
+	if vTarget then
+		tSettings.vTarget = { vTarget.x, vTarget.y, vTarget.z }
+	else
+		tSettings.vTarget = nil
+	end
+	tSettings.nAnimTime = nTime
+	SetPlayerJsData( nPlayer, 'CameraSettings', tSettings )
+end
+
+-----------------------------------------------------------------
 -- Initialization
 
 SetJsData( 'CameraSettings', CAMERA.DEFAULT )
 
 -----------------------------------------------------------------
--- Registering speed tracker
+-- Register speed tracker
 
 Timer( function()
 	local tSpeeds = {}

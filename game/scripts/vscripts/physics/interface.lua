@@ -61,12 +61,10 @@ function BalloonController:constructor( hUnit, tConst )
 
 	self.hThinkTimer = Timer(1/30, function(nDT)
 		if not exist(self.hUnit) then
-			print('DESTROY')
 			self:Destroy()
 			return
 		end
 
-		print(self.vOldPos, self:GetPos())
 		self:UpdateHorizontal(nDT)
 		self:UpdateVertical(nDT)
 
@@ -93,7 +91,6 @@ function BalloonController:Destroy()
     end
 
     if exist( self.hThinkTimer ) then
-		print('CYKA!1')
         self.hThinkTimer:Destroy()
     end
 

@@ -25,12 +25,9 @@ Camera.ChangeSettings = function( t ){
 	t.DISTANCE_CHANGE_TIME = t.DISTANCE_CHANGE_TIME || 0;
 
 	this.SETTINGS = t;
+	this.nDistance = t.DISTANCE;
 
-	if( !this.IsDistanceDynamic() ){
-		this.nDistance = t.DISTANCE;
-		GameUI.SetCameraDistance( t.DISTANCE );
-	}
-
+	GameUI.SetCameraDistance( t.DISTANCE );
 	GameUI.SetCameraPitchMin( t.PITCH );
 	GameUI.SetCameraPitchMax( t.PITCH );
 }
@@ -46,46 +43,75 @@ Camera.IsDistanceDynamic = function(){
 // Update camera
 
 Camera.Update = function(){
-	if( !this.SETTINGS ) return;
-    let nHero = Players.GetPlayerHeroEntityIndex( Players.GetLocalPlayer() );
-	if(nHero < 1) return;
-    let vPos = Entities.GetAbsOrigin( nHero );
-	if( !vPos ) return;
-
-	let nTimeDelta = 0;
 	let nTime = Game.Time();
-	if( this.nLastUpdate ){
-		nTimeDelta = nTime - this.nLastUpdate;
-	}
+	let nTimeDelta = Game.GetGameFrameTime();
 
-	if( this.IsDistanceDynamic() ){
-		let nSpeed = ( _G.GetJsData('CameraSpeed') || {} )[ nHero ];
-		let nPart = nSpeed ? Math.max( 0, Math.min( 1, ( nSpeed - this.SETTINGS.SPEED_FOR_MIN_DISTANCE ) / ( this.SETTINGS.SPEED_FOR_MAX_DISTANCE - this.SETTINGS.SPEED_FOR_MIN_DISTANCE ) ) ) : 0;
-		let nTargetDistance = this.SETTINGS.DISTANCE + ( this.SETTINGS.MAX_DISTANCE - this.SETTINGS.DISTANCE ) * nPart;
-		
-		if( nTimeDelta && nTimeDelta < this.SETTINGS.DISTANCE_CHANGE_TIME ){
-			let nDeltaDistance = nTargetDistance - this.nDistance;
-			this.nDistance = this.nDistance + nDeltaDistance * nTimeDelta / this.SETTINGS.DISTANCE_CHANGE_TIME;
-		} else {
-			this.nDistance = nTargetDistance;
+	if(this.SETTINGS.vTarget){
+		if(!this.vTarget || this.vTarget[0] != this.SETTINGS.vTarget[1]
+		|| this.vTarget[1] != this.SETTINGS.vTarget[2] || this.vTarget[2] != this.SETTINGS.vTarget[3] ){
+			
+			let nAnimTime = this.SETTINGS.nAnimTime || 0.001;
+			this.vTarget = [ this.SETTINGS.vTarget[1], this.SETTINGS.vTarget[2], this.SETTINGS.vTarget[3] ];
+
+			this.nAnimEnd = nTime + nAnimTime;
+			this.nHeightSpeed = ( this.vTarget[2] - (this.nHeight || GameUI.GetCameraLookAtPosition()[2]) ) / nAnimTime
+
+			GameUI.SetCameraTargetPosition(this.vTarget, nAnimTime);
 		}
-
-		GameUI.SetCameraDistance( this.nDistance );
+	}else{
+		this.vTarget = null;
 	}
 
-	vPos[2] += this.SETTINGS.HEIGHT_OFFSET;
+	let vPos;
+	let nHeight;
 
-    GameUI.SetCameraTargetPosition( vPos, 0.06 );
-    GameUI.SetCameraLookAtPositionHeightOffset( vPos[2] );
+	if(this.vTarget){
+		let nAnimTimeRemaining = (this.nAnimEnd || 0) - nTime;
+		if(nAnimTimeRemaining > 0){
+			nHeight = this.vTarget[2] - this.nHeightSpeed * nAnimTimeRemaining;
+		}else{
+			vPos = this.vTarget;
+		}
+	} else {
+		let nHero = Players.GetPlayerHeroEntityIndex( Players.GetLocalPlayer() );
+		if(nHero < 1) return;
+		vPos = Entities.GetAbsOrigin( nHero );
+
+		if( this.IsDistanceDynamic() ){
+			let nSpeed = ( _G.GetJsData('CameraSpeed') || {} )[ nHero ];
+			let nPart = nSpeed ? Math.max( 0, Math.min( 1, ( nSpeed - this.SETTINGS.SPEED_FOR_MIN_DISTANCE ) / ( this.SETTINGS.SPEED_FOR_MAX_DISTANCE - this.SETTINGS.SPEED_FOR_MIN_DISTANCE ) ) ) : 0;
+			let nTargetDistance = this.SETTINGS.DISTANCE + ( this.SETTINGS.MAX_DISTANCE - this.SETTINGS.DISTANCE ) * nPart;
+			
+			if( nTimeDelta && nTimeDelta < this.SETTINGS.DISTANCE_CHANGE_TIME ){
+				let nDeltaDistance = nTargetDistance - this.nDistance;
+				this.nDistance = this.nDistance + nDeltaDistance * nTimeDelta / this.SETTINGS.DISTANCE_CHANGE_TIME;
+			} else {
+				this.nDistance = nTargetDistance;
+			}
+			
+			GameUI.SetCameraDistance( this.nDistance );
+		}
+	}
+
+	if(!nHeight && nHeight != 0){
+		this.nHeight = vPos[2];
+	}else{
+		this.nHeight = nHeight;
+	}
+
+	nHeight = this.nHeight + this.SETTINGS.HEIGHT_OFFSET;
+    GameUI.SetCameraLookAtPositionHeightOffset( nHeight );
 	
-	this.nLastUpdate = nTime;
+	if(vPos){
+    	GameUI.SetCameraTargetPosition( vPos, 0.06 );
+	}
 }
 
 // ==========================================
 // Update timer
 
 Camera.ScheduleUpdate = function(){
-	$.Schedule( 0.01, () => this.ScheduleUpdate() );
+	$.Schedule( 0, () => this.ScheduleUpdate() );
 	this.Update();
 }
 
